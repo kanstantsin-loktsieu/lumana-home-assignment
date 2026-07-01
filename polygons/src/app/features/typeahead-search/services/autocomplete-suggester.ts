@@ -1,11 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { PreviousQueriesStore } from '../../../store/previous-queries/store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AutocompleteSuggester {
+  private readonly previousQueriesStore = inject(PreviousQueriesStore);
+
   // this is intentionally synchronous because there is no backend
   getSuggestions(query: string): string[] {
-    return ['sugg1', 'sugg2', 'sugg3'];
+    return this.previousQueriesStore.queries().filter(q => q.includes(query) && (q !== query));
   };
 }
