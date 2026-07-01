@@ -1,0 +1,16 @@
+<mat-form-field>
+  <mat-label>Search</mat-label>
+  <input matInput [(ngModel)]="query" />
+</mat-form-field>
+@if (showSuggestions()) {
+  <div class="suggestions-container">
+    @for (suggestion of suggestions(); track suggestion;) {
+      <div class="suggestion" (click)="query.set(suggestion); showSuggestions.set(false)">
+        {{ suggestion }}
+      </div>
+      @if (!$last) {
+        <mat-divider />
+      }
+    }
+  </div>
+}

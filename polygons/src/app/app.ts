@@ -1,12 +1,12 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Search } from "./features/typeahead-search/components/search/search";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [Search],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('polygons');
+  readonly title = signal('polygons');
 }
