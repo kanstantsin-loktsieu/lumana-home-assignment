@@ -1,2 +1,4 @@
 <app-search />
-<app-results-table />
+@if (searchResults.value().totalHits > 0) {
+  <app-results-table [results]="searchResults.value().hits" />
+}

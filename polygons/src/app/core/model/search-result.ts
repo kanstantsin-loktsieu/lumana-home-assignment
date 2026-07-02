@@ -1,5 +1,6 @@
 export interface SearchResult {
   id: number,
+  tags: string,
   previewURL: string,
   previewWidth: number,
   previewHeight: number,
@@ -8,8 +9,3 @@ export interface SearchResult {
   webformatHeight: number,
 };
 
-// export interface PixabayResponse {
-//   total: number,
-//   totalHits: number,
-//   hits: SearchResult[],
-// };

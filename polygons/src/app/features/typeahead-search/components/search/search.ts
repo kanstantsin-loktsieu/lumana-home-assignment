@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, linkedSignal, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, linkedSignal, output, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -19,9 +19,8 @@ export class Search {
   readonly query = signal('');
   readonly showSuggestions = linkedSignal(() => this.debouncedQuery().trim().length > 0);
   readonly suggestions = computed(() => this.autocompleteSuggester.getSuggestions(this.debouncedQuery()));
-
   // debounced() is still experimental
-  private readonly debouncedQuery = toSignal(
+  readonly debouncedQuery = toSignal(
     toObservable(this.query)
       .pipe(
         debounceTime(300),
