@@ -1,5 +1,14 @@
 :host {
-  .image {
+  .image-container {
+    position: relative;
     overflow: hidden;
+
+    .image {
+      position: absolute;
+    }
+
+    .canvas {
+      position: absolute;
+    }
   }
 }

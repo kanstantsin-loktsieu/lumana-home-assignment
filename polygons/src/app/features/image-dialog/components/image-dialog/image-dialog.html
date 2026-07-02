@@ -1,6 +1,15 @@
-<img
-  class="image"
-  [ngSrc]="data.webformatURL"
-  [width]="data.webformatWidth"
-  [height]="data.webformatHeight"
-/>
+<div class="image-container">
+  <img
+    class="image"
+    [ngSrc]="data.webformatURL"
+    [width]="data.webformatWidth"
+    [height]="data.webformatHeight"
+  />
+  <canvas
+    class="canvas"
+    polygonCanvas
+    [imageId]="data.id"
+    [width]="data.webformatWidth"
+    [height]="data.webformatHeight">
+  </canvas>>
+</div>
