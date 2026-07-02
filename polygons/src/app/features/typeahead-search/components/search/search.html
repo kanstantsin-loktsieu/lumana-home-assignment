@@ -4,7 +4,7 @@
 </mat-form-field>
 @if (showSuggestions()) {
   <div class="suggestions-container">
-    @for (suggestion of suggestions(); track suggestion;) {
+    @for (suggestion of suggestions(); track suggestion) {
       <ul class="suggestion" (click)="query.set(suggestion); showSuggestions.set(false)">
         <li>
           <span>{{ suggestion }}</span>

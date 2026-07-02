@@ -16,7 +16,7 @@ export class Search {
   private readonly autocompleteSuggester = inject(AutocompleteSuggester);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly query = signal('', {  });
+  readonly query = signal('');
   readonly showSuggestions = linkedSignal(() => this.debouncedQuery().trim().length > 0);
   readonly suggestions = computed(() => this.autocompleteSuggester.getSuggestions(this.debouncedQuery()));
 
