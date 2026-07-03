@@ -8,6 +8,7 @@ const initialState: PreviousQueriesState = {
   queries: ['sugg1', 'sugg2', 'abc'],
 };
 
+// TO DO: rewrite to classic store
 export const PreviousQueriesStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),

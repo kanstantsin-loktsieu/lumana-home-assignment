@@ -1,5 +1,9 @@
 import { computed, Directive, effect, ElementRef, inject, input, linkedSignal, signal } from '@angular/core';
 import { Polygon } from '../../../core/model/polygon';
+import { Store } from '@ngrx/store';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { selectImagePolygons } from '../../../store/image-polygons/selectors';
+import { ImagePolygonsActions } from '../../../store/image-polygons/actions';
 
 interface Point {
   x: number,
@@ -14,11 +18,11 @@ interface Point {
   }
 })
 export class PolygonCanvas {
+  private readonly store = inject(Store);
+
   readonly imageId = input.required<number>({ alias: 'imageId' });
 
-  private readonly storedPolygons = signal<Polygon[]>([]);
-  private readonly newPolygons = signal<Polygon[]>([]);
-  private readonly renderedPolygons = computed(() => [...this.storedPolygons(), ...this.newPolygons()]);
+  private readonly polygons = computed(() => this.store.selectSignal(selectImagePolygons)()[this.imageId()] ?? []);
   private readonly currDrawnPolygonVertices = signal<Array<Point>>([]);
   private readonly pointerCoordinates = signal<Point>({ x: 0, y: 0 });
 
@@ -58,7 +62,7 @@ export class PolygonCanvas {
     this.ctx.fillStyle = this.fillStyle;
     this.ctx.strokeStyle = this.strokeStyle;
     this.ctx.lineWidth = 3;
-    this.renderedPolygons().forEach(polygon => this.renderPolygon(polygon));
+    this.polygons().forEach(polygon => this.renderPolygon(polygon));
     if (this.currDrawnPolygonVertices().length) {
       this.ctx.stroke(this.getPathFromPoints([...this.currDrawnPolygonVertices(), this.pointerCoordinates()]));
     }
@@ -72,8 +76,14 @@ export class PolygonCanvas {
     const canvasPoint = { x: event.offsetX, y: event.offsetY };
     this.currDrawnPolygonVertices.update(prev => [...prev, canvasPoint]);
     if (event.shiftKey) {
-      this.newPolygons.update(prev => [...prev, new Polygon(this.currDrawnPolygonVertices())]);
+      if (this.currDrawnPolygonVertices().length > 2) {
+        this.storeNewPolygon(new Polygon(this.currDrawnPolygonVertices()));
+      }
       this.currDrawnPolygonVertices.set([]);
     }
+  }
+
+  private storeNewPolygon(polygon: Polygon) {
+    this.store.dispatch(ImagePolygonsActions.addPolygon({ imageId: this.imageId(), polygon }));
   }
 }
