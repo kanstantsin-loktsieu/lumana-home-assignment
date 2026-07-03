@@ -1,4 +1,3 @@
-// x and y are not pixel values but rather normalized percentage values between 0 and 1 relative to the canvas the polygon is drawn on
 interface Point {
   x: number;
   y: number;
