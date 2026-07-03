@@ -7,7 +7,6 @@ import { PreviousQueriesStore } from '../../../store/previous-queries/store';
 export class AutocompleteSuggester {
   private readonly previousQueriesStore = inject(PreviousQueriesStore);
 
-  // this is intentionally synchronous because there is no backend
   getSuggestions(query: string): string[] {
     return this.previousQueriesStore.queries().filter(q => q.includes(query) && (q !== query));
   };
