@@ -1,4 +1,4 @@
-interface Point {
+export interface Point {
   x: number;
   y: number;
 }
@@ -17,6 +17,14 @@ export class Polygon {
   constructor(vertices: Array<Point>) {
     this.vertices = vertices.slice();
     this.initGeometricProperties(vertices);
+  }
+
+  // it's crude and mathematically incorrect, but sufficient
+  public containsPoint(point: Point) {
+    return point.x >= this.geometricProperties.minX
+      && point.x <= this.geometricProperties.maxX
+      && point.y >= this.geometricProperties.minY
+      && point.y <= this.geometricProperties.maxY;
   }
 
   private initGeometricProperties(vertices: Array<Point>) {

@@ -1,14 +1,8 @@
-import { computed, Directive, effect, ElementRef, inject, input, linkedSignal, signal } from '@angular/core';
-import { Polygon } from '../../../core/model/polygon';
+import { computed, Directive, effect, ElementRef, inject, input, signal } from '@angular/core';
+import { Point, Polygon } from '../../../core/model/polygon';
 import { Store } from '@ngrx/store';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { selectImagePolygons } from '../../../store/image-polygons/selectors';
 import { ImagePolygonsActions } from '../../../store/image-polygons/actions';
-
-interface Point {
-  x: number,
-  y: number
-}
 
 @Directive({
   selector: '[polygonCanvas]',
@@ -23,7 +17,9 @@ export class PolygonCanvas {
   readonly imageId = input.required<number>({ alias: 'imageId' });
 
   private readonly polygons = computed(() => this.store.selectSignal(selectImagePolygons)()[this.imageId()] ?? []);
+  private readonly selectedPolygonIndex = signal(-1);
   private readonly currDrawnPolygonVertices = signal<Array<Point>>([]);
+  private readonly drawingPolygon = computed(() => this.currDrawnPolygonVertices().length > 0);
   private readonly pointerCoordinates = signal<Point>({ x: 0, y: 0 });
 
   private readonly canvas = inject(ElementRef).nativeElement as HTMLCanvasElement;
@@ -33,6 +29,7 @@ export class PolygonCanvas {
 
   private readonly fillStyle = 'rgba(0, 0, 255, 0.5)';
   private readonly strokeStyle = 'rgba(255, 0, 0, 1)';
+  private readonly boundaryWidth = 2;
 
   constructor() {
     effect(() => this.rerender());
@@ -51,7 +48,7 @@ export class PolygonCanvas {
     return path;
   }
 
-  private renderPolygon(polygon: Polygon) {
+  private renderPolygon(polygon: Polygon, selected = false) {
     const boundaryPath = this.getPathFromPoints(polygon.vertices);
     this.ctx.fill(boundaryPath);
     this.ctx.stroke(boundaryPath);
@@ -61,11 +58,22 @@ export class PolygonCanvas {
     this.ctx.clearRect(0, 0, this.width, this.height);
     this.ctx.fillStyle = this.fillStyle;
     this.ctx.strokeStyle = this.strokeStyle;
-    this.ctx.lineWidth = 3;
-    this.polygons().forEach(polygon => this.renderPolygon(polygon));
-    if (this.currDrawnPolygonVertices().length) {
+    this.ctx.lineWidth = this.boundaryWidth;
+    this.polygons().forEach((polygon, index) => this.renderPolygon(polygon, index === this.selectedPolygonIndex()));
+    if (this.drawingPolygon()) {
       this.ctx.stroke(this.getPathFromPoints([...this.currDrawnPolygonVertices(), this.pointerCoordinates()]));
     }
+  }
+
+  private storeNewPolygon(polygon: Polygon) {
+    this.store.dispatch(ImagePolygonsActions.addPolygon({ imageId: this.imageId(), polygon }));
+  }
+
+  private stopDrawingPolygon() {
+    if (this.currDrawnPolygonVertices().length > 2) {
+      this.storeNewPolygon(new Polygon(this.currDrawnPolygonVertices()));
+    }
+    this.currDrawnPolygonVertices.set([]);
   }
 
   protected handleMouseMove(event: MouseEvent) {
@@ -74,16 +82,16 @@ export class PolygonCanvas {
 
   protected handleClick(event: PointerEvent) {
     const canvasPoint = { x: event.offsetX, y: event.offsetY };
-    this.currDrawnPolygonVertices.update(prev => [...prev, canvasPoint]);
-    if (event.shiftKey) {
-      if (this.currDrawnPolygonVertices().length > 2) {
-        this.storeNewPolygon(new Polygon(this.currDrawnPolygonVertices()));
-      }
-      this.currDrawnPolygonVertices.set([]);
-    }
-  }
 
-  private storeNewPolygon(polygon: Polygon) {
-    this.store.dispatch(ImagePolygonsActions.addPolygon({ imageId: this.imageId(), polygon }));
+    const newSelectedPolygonIndex = this.polygons().findIndex(polygon => polygon.containsPoint(canvasPoint));
+    if (newSelectedPolygonIndex !== this.selectedPolygonIndex()) {
+      this.selectedPolygonIndex.set(newSelectedPolygonIndex);
+      return;
+    }
+
+    this.currDrawnPolygonVertices.update(prev => [...prev, canvasPoint]);
+    if (event.shiftKey && this.drawingPolygon()) {
+      this.stopDrawingPolygon();
+    }
   }
 }
