@@ -13,7 +13,7 @@ import { Store } from '@ngrx/store';
 import { NewPolygon, PolygonChange } from '../../models/editor';
 import { ImageDialogData } from '../../models/image-dialog-data';
 import { PolygonEditor } from './polygon-editor/polygon-editor';
-import { PolygonActions } from '../../state/polygon.actions';
+import { PolygonsActions } from '../../state/polygons.actions';
 import { selectPolygonsForImage } from '../../state/polygons.reducer';
 
 /** Container: wires the presentational polygon editor to the store for one image. */
@@ -66,19 +66,19 @@ export class ImageDialog {
 
   protected onCreated(polygon: NewPolygon): void {
     this.store.dispatch(
-      PolygonActions.polygonAdded({ polygon: { ...polygon, imageId: this.image.nasaId } }),
+      PolygonsActions.polygonAdded({ polygon: { ...polygon, imageId: this.image.nasaId } }),
     );
   }
 
   protected onChanged({ id, points }: PolygonChange): void {
-    this.store.dispatch(PolygonActions.polygonChanged({ id, points }));
+    this.store.dispatch(PolygonsActions.polygonChanged({ id, points }));
   }
 
   protected onDeleted(id: string): void {
-    this.store.dispatch(PolygonActions.polygonRemoved({ id }));
+    this.store.dispatch(PolygonsActions.polygonRemoved({ id }));
   }
 
   protected onCleared(): void {
-    this.store.dispatch(PolygonActions.imagePolygonsCleared({ imageId: this.image.nasaId }));
+    this.store.dispatch(PolygonsActions.imagePolygonsCleared({ imageId: this.image.nasaId }));
   }
 }

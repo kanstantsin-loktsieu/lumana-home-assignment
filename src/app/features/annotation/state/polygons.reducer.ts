@@ -1,7 +1,7 @@
 import { createEntityAdapter } from '@ngrx/entity';
 import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 import { Polygon, PolygonsState } from '../models/polygon';
-import { PolygonActions } from './polygon.actions';
+import { PolygonsActions } from './polygons.actions';
 
 /** Keyed by polygon id; insertion order is the z-order (later polygons are drawn on top). */
 const polygonsAdapter = createEntityAdapter<Polygon>();
@@ -14,12 +14,14 @@ export const polygonsFeature = createFeature({
   name: 'polygons',
   reducer: createReducer(
     initialState,
-    on(PolygonActions.polygonAdded, (state, { polygon }) => polygonsAdapter.addOne(polygon, state)),
-    on(PolygonActions.polygonChanged, (state, { id, points }) =>
+    on(PolygonsActions.polygonAdded, (state, { polygon }) =>
+      polygonsAdapter.addOne(polygon, state),
+    ),
+    on(PolygonsActions.polygonChanged, (state, { id, points }) =>
       polygonsAdapter.updateOne({ id, changes: { points } }, state),
     ),
-    on(PolygonActions.polygonRemoved, (state, { id }) => polygonsAdapter.removeOne(id, state)),
-    on(PolygonActions.imagePolygonsCleared, (state, { imageId }) =>
+    on(PolygonsActions.polygonRemoved, (state, { id }) => polygonsAdapter.removeOne(id, state)),
+    on(PolygonsActions.imagePolygonsCleared, (state, { imageId }) =>
       polygonsAdapter.removeMany((polygon) => polygon.imageId === imageId, state),
     ),
   ),
