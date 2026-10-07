@@ -1,0 +1,36 @@
+@let isIdle = status() === 'idle';
+
+<section #hero class="hero" [class.compact]="!isIdle">
+  @if (isIdle) {
+    <div
+      class="intro"
+      [animate.enter]="hasLeftIdle() ? 'intro-expand' : ''"
+      animate.leave="intro-collapse"
+    >
+      <div class="intro-content">
+        <h1 class="headline">Search the NASA image archive</h1>
+        <p class="lede">More than 200,000 images from missions, telescopes and astronauts.</p>
+      </div>
+    </div>
+  }
+  <app-search-box
+    class="search-box"
+    [formField]="searchForm.query"
+    [suggestions]="suggestions()"
+    (suggestionPicked)="onSuggestionPicked($event)"
+  />
+</section>
+
+<app-results-list
+  class="results"
+  [items]="results()"
+  [status]="status()"
+  [query]="query()"
+  [totalHits]="totalHits()"
+  [canLoadMore]="canLoadMore()"
+  [isCapped]="isCapped()"
+  [errorMessage]="errorMessage()"
+  (nearEnd)="loadMore()"
+  (retry)="retry()"
+  (opened)="openImageDialog($event)"
+/>

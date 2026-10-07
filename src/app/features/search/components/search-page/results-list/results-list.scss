@@ -1,0 +1,224 @@
+@use 'breakpoints' as bp;
+
+// Minimum height of the card's header and footer strips.
+$bar-min-height: 44px;
+$message-icon-size: 48px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: var(--mat-sys-corner-large);
+  overflow: hidden;
+
+  .card-header {
+    flex: none;
+    min-height: $bar-min-height;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font: var(--mat-sys-label-large);
+    color: var(--mat-sys-on-surface-variant);
+
+    strong {
+      color: var(--mat-sys-on-surface);
+    }
+  }
+
+  .progress,
+  .progress-spacer {
+    flex: none;
+    height: 4px;
+  }
+
+  .viewport {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .footer-bar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: $bar-min-height;
+    padding: 4px 16px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    font: var(--mat-sys-body-small);
+    color: var(--mat-sys-on-surface-variant);
+
+    &.error {
+      color: var(--mat-sys-error);
+    }
+  }
+}
+
+// Shared by result rows (in .viewport) and skeleton rows (in .state), so it is not nested under either.
+// Fixed height: the component passes ROW_HEIGHT_PX in as the --row-height custom property.
+.row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  height: var(--row-height);
+  padding: 0 16px;
+  border: 0;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+
+  @include bp.phone {
+    gap: 12px;
+    padding: 0 12px;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-on-surface) 6%, transparent);
+  }
+
+  &:focus-visible {
+    outline-offset: -2px;
+    background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+  }
+
+  .thumb {
+    flex: none;
+    width: var(--thumb-width);
+    height: var(--thumb-height);
+    object-fit: cover;
+    border-radius: var(--mat-sys-corner-small);
+    background: var(--mat-sys-surface-variant);
+
+    @include bp.phone {
+      width: 88px;
+    }
+  }
+
+  .text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font: var(--mat-sys-title-medium);
+      color: var(--mat-sys-on-surface);
+    }
+
+    .meta {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+      font: var(--mat-sys-body-small);
+      color: var(--mat-sys-on-surface-variant);
+
+      code {
+        font-size: 11px;
+      }
+    }
+
+    // The NASA id and its separator, inside .meta; hidden on phones.
+    .id-part {
+      @include bp.phone {
+        display: none;
+      }
+    }
+  }
+
+  .chevron {
+    flex: none;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &.skeleton {
+    cursor: default;
+
+    &:hover {
+      background: transparent;
+    }
+
+    .thumb,
+    .bar {
+      animation: pulse 1.2s ease-in-out infinite;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+    }
+
+    .bar {
+      display: block;
+      width: 40%;
+      height: 12px;
+      border-radius: 6px;
+      background: var(--mat-sys-surface-variant);
+
+      &.wide {
+        width: 70%;
+        height: 16px;
+      }
+    }
+  }
+}
+
+.state {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+
+  .message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--mat-sys-on-surface);
+
+    p {
+      margin: 4px 0;
+      font: var(--mat-sys-body-large);
+    }
+
+    .secondary {
+      font: var(--mat-sys-body-medium);
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    button {
+      margin-top: 16px;
+    }
+
+    .message-icon {
+      width: $message-icon-size;
+      height: $message-icon-size;
+      margin-bottom: 8px;
+      font-size: $message-icon-size;
+      color: var(--mat-sys-primary);
+    }
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}

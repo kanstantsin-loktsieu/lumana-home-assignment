@@ -1,0 +1,41 @@
+$option-icon-size: 20px;
+
+:host {
+  display: block;
+}
+
+.search-field {
+  width: 100%;
+  --mat-form-field-outlined-container-shape: var(--mat-sys-corner-extra-large);
+  --mat-form-field-container-height: 56px;
+
+  .prefix-icon {
+    margin: 0 4px 0 12px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  // Keeps the clear icon off the pill's rounded end: its centre sits as far from the right edge
+  // (36px) as the search icon's centre sits from the left.
+  .clear-button {
+    margin-right: 16px;
+  }
+}
+
+.mat-mdc-option {
+  .option-icon {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: $option-icon-size;
+    width: $option-icon-size;
+    height: $option-icon-size;
+  }
+
+  mark {
+    font-weight: 500;
+  }
+
+  // `white-space: pre` keeps the spaces between highlight segments.
+  span,
+  mark {
+    white-space: pre;
+  }
+}

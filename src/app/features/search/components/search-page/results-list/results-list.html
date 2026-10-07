@@ -1,0 +1,137 @@
+<div class="card">
+  <div class="card-header">
+    @switch (status()) {
+      @case ('idle') {
+        <span>Start typing to search the NASA Image Library</span>
+      }
+      @case ('loading') {
+        <span>Searching for “{{ query() }}”…</span>
+      }
+      @default {
+        @if (totalHits() > 0) {
+          <span>
+            <strong>{{ totalHits() | number }}</strong>
+            {{ totalHits() === 1 ? 'result' : 'results' }} for “{{ query() }}”
+          </span>
+        }
+      }
+    }
+  </div>
+
+  @if (status() === 'loading' || status() === 'loadingMore') {
+    <mat-progress-bar class="progress" mode="indeterminate" aria-label="Loading results" />
+  } @else {
+    <div class="progress-spacer"></div>
+  }
+
+  @if (hasItems()) {
+    <cdk-virtual-scroll-viewport
+      appRenderedRange
+      class="viewport"
+      [itemSize]="rowHeight"
+      [minBufferPx]="minBufferPx"
+      [maxBufferPx]="maxBufferPx"
+    >
+      <button
+        *cdkVirtualFor="
+          let item of items();
+          trackBy: trackByNasaId;
+          templateCacheSize: templateCacheSize
+        "
+        type="button"
+        class="row"
+        [attr.aria-label]="'Open ' + item.title"
+        (click)="opened.emit(item)"
+      >
+        <img
+          class="thumb"
+          [src]="item.thumbUrl"
+          alt=""
+          [attr.width]="thumbWidth"
+          [attr.height]="thumbHeight"
+          loading="lazy"
+          decoding="async"
+        />
+        <span class="text">
+          <span class="title" [title]="item.title">{{ item.title }}</span>
+          <span class="meta">
+            <span>{{ item.dateCreated | date: 'mediumDate' }}</span>
+            @if (item.center) {
+              <span class="dot" aria-hidden="true">·</span>
+              <span>{{ item.center }}</span>
+            }
+            <span class="dot id-part" aria-hidden="true">·</span>
+            <code class="id-part">{{ item.nasaId }}</code>
+          </span>
+        </span>
+        <mat-icon class="chevron" aria-hidden="true">chevron_right</mat-icon>
+      </button>
+    </cdk-virtual-scroll-viewport>
+
+    @if (status() === 'error') {
+      <div class="footer-bar error" role="alert">
+        <mat-icon aria-hidden="true">error</mat-icon>
+        <span>Couldn't load more results.</span>
+        <button matButton type="button" (click)="retry.emit()">Retry</button>
+      </div>
+    } @else if (isCapped()) {
+      <div class="footer-bar">
+        <mat-icon aria-hidden="true">info</mat-icon>
+        <span>
+          Showing the first {{ maxReachable | number }} of {{ totalHits() | number }}. Refine your
+          search to see more.
+        </span>
+      </div>
+    } @else if (reachedEnd()) {
+      <div class="footer-bar">
+        <mat-icon aria-hidden="true">done_all</mat-icon>
+        <span>{{
+          items().length === 1
+            ? 'The only result is shown'
+            : 'All ' + (items().length | number) + ' results shown'
+        }}</span>
+      </div>
+    }
+  } @else {
+    <div class="state">
+      @switch (status()) {
+        @case ('loading') {
+          <div class="skeletons" aria-hidden="true">
+            @for (i of skeletonRows; track i) {
+              <div class="row skeleton">
+                <span class="thumb"></span>
+                <span class="text">
+                  <span class="bar wide"></span>
+                  <span class="bar"></span>
+                </span>
+              </div>
+            }
+          </div>
+        }
+        @case ('error') {
+          <div class="message">
+            <mat-icon class="message-icon" aria-hidden="true">cloud_off</mat-icon>
+            <p>{{ errorMessage() ?? 'Something went wrong while searching.' }}</p>
+            <button matButton="tonal" type="button" (click)="retry.emit()">Try again</button>
+          </div>
+        }
+        @case ('loaded') {
+          <div class="message">
+            <mat-icon class="message-icon" aria-hidden="true">image_search</mat-icon>
+            <p>No images match “{{ query() }}”.</p>
+            <p class="secondary">The search matches whole words, so try completing the word.</p>
+          </div>
+        }
+        @default {
+          <div class="message">
+            <mat-icon class="message-icon" aria-hidden="true">rocket_launch</mat-icon>
+            <p>Explore missions, planets, galaxies and astronauts.</p>
+            <p class="secondary">Results appear as you type. Click a result to annotate it.</p>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>
+
+<p class="visually-hidden" aria-live="polite">{{ announcement() }}</p>

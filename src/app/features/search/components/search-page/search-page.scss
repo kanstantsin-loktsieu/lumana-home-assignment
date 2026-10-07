@@ -1,0 +1,112 @@
+@use 'breakpoints' as bp;
+
+// The hero's padding and the intro's collapse run together, so the search box glides into place.
+$hero-transition-duration: 200ms;
+
+:host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 16px 16px;
+
+  @include bp.phone {
+    padding: 0 8px 8px;
+  }
+}
+
+.hero {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 0 24px;
+  text-align: center;
+  transition: padding $hero-transition-duration ease;
+
+  @include bp.phone {
+    padding: 24px 0 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &.compact {
+    padding: 20px 0 16px;
+
+    @include bp.phone {
+      padding: 12px 0 8px;
+    }
+  }
+
+  // A one-row grid animates between its content height (1fr) and nothing (0fr), which a plain
+  // `height: auto` cannot do.
+  .intro {
+    display: grid;
+    grid-template-rows: 1fr;
+    width: 100%;
+
+    &.intro-collapse {
+      animation: intro-collapse $hero-transition-duration ease forwards;
+    }
+
+    &.intro-expand {
+      animation: intro-collapse $hero-transition-duration ease reverse;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      &.intro-collapse,
+      &.intro-expand {
+        animation: none;
+      }
+    }
+
+    .intro-content {
+      // Hidden overflow also contains the children's margins, so they collapse with the row.
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .headline {
+      margin: 0 0 8px;
+      font: var(--mat-sys-headline-medium);
+      color: var(--mat-sys-on-surface);
+
+      @include bp.phone {
+        font: var(--mat-sys-headline-small);
+      }
+    }
+
+    .lede {
+      margin: 0 0 24px;
+      font: var(--mat-sys-body-large);
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  .search-box {
+    width: 100%;
+    max-width: 720px;
+  }
+}
+
+.results {
+  flex: 1;
+  min-height: 0;
+}
+
+@keyframes intro-collapse {
+  from {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
