@@ -68,10 +68,12 @@ export class SearchPage {
   constructor() {
     this.store.dispatch(() => SearchPageActions.queryChanged({ query: this.searchModel().query }));
 
+    // inject() only works in the injection context, not inside the afterNextRender callback.
+    const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       const observer = new ResizeObserver(() => this.searchBox().repositionPanel());
       observer.observe(this.hero().nativeElement, { box: 'border-box' });
-      inject(DestroyRef).onDestroy(() => observer.disconnect());
+      destroyRef.onDestroy(() => observer.disconnect());
     });
   }
 

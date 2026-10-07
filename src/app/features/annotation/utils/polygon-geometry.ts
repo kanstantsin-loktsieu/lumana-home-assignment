@@ -49,8 +49,8 @@ export const centroid = (points: readonly Point[]): Point => {
 export const boundingBox = (points: readonly Point[]): Box => {
   let minX = Infinity,
     minY = Infinity,
-    maxX = 0,
-    maxY = 0;
+    maxX = -Infinity,
+    maxY = -Infinity;
   points.forEach((point) => {
     minX = Math.min(minX, point.x);
     maxX = Math.max(maxX, point.x);

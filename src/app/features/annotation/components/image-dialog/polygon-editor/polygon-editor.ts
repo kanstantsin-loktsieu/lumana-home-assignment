@@ -150,6 +150,8 @@ export class PolygonEditor {
       untracked(() => this.requestDraw());
     });
 
+    // inject() only works in the injection context, not inside the afterNextRender callback.
+    const destroyRef = inject(DestroyRef);
     afterNextRender(() => {
       const canvas = this.canvasRef().nativeElement;
       const stage = this.stageRef().nativeElement;
@@ -197,7 +199,7 @@ export class PolygonEditor {
       }
       this.updateCursorStyle(null);
 
-      inject(DestroyRef).onDestroy(() => {
+      destroyRef.onDestroy(() => {
         resizeObserver.disconnect();
         resolutionQuery?.removeEventListener('change', onResolutionChange);
         for (const [type, listener] of listeners) {
