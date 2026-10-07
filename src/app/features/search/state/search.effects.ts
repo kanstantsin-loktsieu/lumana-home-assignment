@@ -17,7 +17,7 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
-import { normalizeQuery } from '../../../shared/utils/query-text';
+import { normalizeQuery } from '../../../shared/utils/query-utils';
 import { NasaImagesApi } from '../api/nasa-images-api';
 import { FIRST_PAGE } from '../constants/search.constants';
 import { SearchError } from '../models/search-result';

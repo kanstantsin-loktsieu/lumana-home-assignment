@@ -1,5 +1,5 @@
 import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
-import { tokenize } from '../../../shared/utils/query-text';
+import { tokenize } from '../../../shared/utils/query-utils';
 import { FIRST_PAGE } from '../constants/search.constants';
 import { IndexedQuery, QueriesState } from '../models/saved-query';
 import { rememberQuery } from '../utils/query-history';

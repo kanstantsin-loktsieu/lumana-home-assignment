@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpStatusCode } from '@angular/common/http';
 import { retry, throwError, timer } from 'rxjs';
-import { NETWORK_ERROR_STATUS } from '../../shared/constants/http.constants';
+import { NETWORK_ERROR_STATUS } from '../../shared/constants/error-status';
 
 const MAX_RETRIES = 2;
 const BASE_DELAY_MS = 400;

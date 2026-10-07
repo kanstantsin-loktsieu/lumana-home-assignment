@@ -1,4 +1,4 @@
-import { normalizeQuery, tokenize, tokenizeWithOffsets } from '../../../shared/utils/query-text';
+import { normalizeQuery, tokenize, tokenizeWithOffsets } from '../../../shared/utils/query-utils';
 import { IndexedQuery } from '../models/saved-query';
 import { Suggestion, SuggestionSegment } from '../models/suggestion';
 

@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpStatusCode } from '@angular/common/http';
-import { NETWORK_ERROR_STATUS } from '../../../shared/constants/http.constants';
+import { NETWORK_ERROR_STATUS } from '../../../shared/constants/error-status';
 import { NasaErrorBodyDto } from '../models/nasa-images-dto';
 import { SearchError } from '../models/search-result';
 

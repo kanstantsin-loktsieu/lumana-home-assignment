@@ -1,4 +1,4 @@
-import { normalizeQuery, tokenize } from '../../../shared/utils/query-text';
+import { normalizeQuery, tokenize } from '../../../shared/utils/query-utils';
 
 /**
  * NASA search matches whole words, not prefixes: `a` returns the whole library and `m` matches
