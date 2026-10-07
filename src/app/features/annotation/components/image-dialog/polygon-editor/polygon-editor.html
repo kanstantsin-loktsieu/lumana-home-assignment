@@ -1,0 +1,87 @@
+<div class="toolbar" role="toolbar" aria-label="Annotation tools">
+  <mat-button-toggle-group
+    class="modes"
+    aria-label="Editor mode"
+    hideSingleSelectionIndicator
+    [value]="mode()"
+    (change)="setMode($event.value)"
+  >
+    <mat-button-toggle value="draw" matTooltip="Draw (D)">
+      <mat-icon>draw</mat-icon>
+      <span class="label">Draw</span>
+    </mat-button-toggle>
+    <mat-button-toggle value="select" matTooltip="Select, move &amp; rotate (S)">
+      <mat-icon>arrow_selector_tool</mat-icon>
+      <span class="label">Select</span>
+    </mat-button-toggle>
+    <mat-button-toggle value="delete" matTooltip="Delete (X)">
+      <mat-icon>ink_eraser</mat-icon>
+      <span class="label">Delete</span>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <button
+    matButton="outlined"
+    type="button"
+    class="clear"
+    [disabled]="polygons().length === 0"
+    (click)="clearAll()"
+  >
+    <mat-icon>delete_sweep</mat-icon>
+    Clear
+  </button>
+
+  <span class="count">
+    {{ polygons().length }} {{ polygons().length === 1 ? 'shape' : 'shapes' }}
+  </span>
+</div>
+
+<p class="hint" [class.message]="message()">
+  <mat-icon class="hint-icon" aria-hidden="true">{{ message() ? 'info' : 'lightbulb' }}</mat-icon>
+  <span>{{ message() ?? modeHint() }}</span>
+</p>
+<p class="visually-hidden" aria-live="polite">{{ message() }}</p>
+
+<div #stageWrap class="stage-wrap">
+  <div
+    #stage
+    class="stage"
+    [style.width.px]="stageSize().width"
+    [style.height.px]="stageSize().height"
+    [class.ready]="imageLoaded()"
+  >
+    @if (!imageFailed()) {
+      <img
+        #image
+        class="image"
+        [src]="currentSrc()"
+        [alt]="imageAlt()"
+        decoding="async"
+        draggable="false"
+        (load)="onImageLoad(image)"
+        (error)="onImageError()"
+      />
+    }
+    <canvas
+      #canvas
+      class="canvas"
+      tabindex="0"
+      aria-label="Polygon annotation canvas. Keys: D draw, S select, X delete, Enter finish, Delete removes the selected shape, Escape cancels."
+    ></canvas>
+    @if (!imageLoaded() && !imageFailed()) {
+      <div class="overlay">
+        <mat-progress-spinner
+          mode="indeterminate"
+          [diameter]="spinnerDiameter"
+          aria-label="Loading image"
+        />
+      </div>
+    }
+    @if (imageFailed()) {
+      <div class="overlay error">
+        <mat-icon aria-hidden="true">broken_image</mat-icon>
+        <span>The image could not be loaded.</span>
+      </div>
+    }
+  </div>
+</div>

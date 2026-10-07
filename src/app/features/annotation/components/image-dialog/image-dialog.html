@@ -1,0 +1,40 @@
+<header class="header">
+  <div class="heading">
+    <h2 mat-dialog-title class="title">{{ image.title }}</h2>
+    <p class="meta">
+      <span>{{ image.dateCreated | date: 'longDate' }}</span>
+      @if (image.center) {
+        <span aria-hidden="true">·</span>
+        <span>{{ image.center }}</span>
+      }
+      <span aria-hidden="true">·</span>
+      <code>{{ image.nasaId }}</code>
+    </p>
+  </div>
+  <button matIconButton type="button" class="close" aria-label="Close dialog" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</header>
+
+<mat-dialog-content class="content">
+  <app-polygon-editor
+    [imageUrl]="image.imageUrl"
+    [fallbackUrl]="image.thumbUrl"
+    [imageWidth]="image.imageWidth"
+    [imageHeight]="image.imageHeight"
+    [imageAlt]="image.title"
+    [polygons]="polygons()"
+    (polygonCreated)="onCreated($event)"
+    (polygonChanged)="onChanged($event)"
+    (polygonDeleted)="onDeleted($event)"
+    (cleared)="onCleared()"
+  />
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <span class="saved-note">
+    <mat-icon aria-hidden="true">layers</mat-icon>
+    Shapes stay with this image until you reload the page
+  </span>
+  <button matButton="filled" type="button" (click)="close()">Done</button>
+</mat-dialog-actions>
