@@ -17,7 +17,6 @@ export const SearchApiActions = createActionGroup({
     'Search Started': props<{ query: string }>(),
     'Search Cleared': emptyProps(),
     'Next Page Started': props<{ query: string; page: number }>(),
-    /** `loadedAt` is stamped by the effect so reducers stay pure. */
     'Page Loaded': props<{
       query: string;
       page: number;

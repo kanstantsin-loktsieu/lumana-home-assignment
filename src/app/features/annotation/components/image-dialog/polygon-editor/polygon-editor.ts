@@ -19,8 +19,8 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatTooltip } from '@angular/material/tooltip';
 import {
-  ROTATE_HANDLE_RADIUS_PX,
   MIN_POLYGON_VERTICES,
+  ROTATE_HANDLE_RADIUS_PX,
   SELECTION_BOX_PADDING_PX,
 } from '../../../constants/annotation.constants';
 import {
@@ -54,20 +54,15 @@ import { renderScene } from '../../../utils/polygon-renderer';
 
 const CLOSE_TOLERANCE_PX = 10;
 const DUPLICATE_VERTEX_TOLERANCE_PX = 3;
-/** The rotate handle can be grabbed a little outside its drawn knob. */
+// the rotate handle can be grabbed a little outside its drawn knob
 const ROTATE_HANDLE_HIT_SLOP_PX = 3;
 const ROTATE_HANDLE_HIT_PX = ROTATE_HANDLE_RADIUS_PX + ROTATE_HANDLE_HIT_SLOP_PX;
 const ROTATE_HANDLE_DISTANCE_PX = 28;
 const ROTATE_HANDLE_EDGE_GAP_PX = 2;
 const MESSAGE_TIMEOUT_MS = 3500;
-
-/** Used until the API's rendition size or the loaded image tells the real aspect ratio. */
 const FALLBACK_ASPECT_RATIO = 4 / 3;
 const SPINNER_DIAMETER_PX = 40;
-/** `MouseEvent.button` of the primary (usually left) button. */
 const PRIMARY_MOUSE_BUTTON = 0;
-/** `MouseEvent.detail` (the click count) of the second click of a double-click. */
-const DOUBLE_CLICK_COUNT = 2;
 
 const MODE_HINTS: Record<EditorMode, string> = {
   draw: 'Click to add points. Click the first point, double-click or press Enter to finish.',
@@ -77,13 +72,6 @@ const MODE_HINTS: Record<EditorMode, string> = {
 
 const MODE_KEYS: Record<string, EditorMode> = { d: 'draw', s: 'select', x: 'delete' };
 
-/**
- * Canvas polygon editor over an image. Presentational: polygons come in as an input (normalized
- * 0..1 coordinates) and every change goes out through an output, once per gesture.
- *
- * Pointer listeners are attached imperatively so pointer moves never trigger change detection;
- * frames are coalesced with requestAnimationFrame and painted only when something changed.
- */
 @Component({
   selector: 'app-polygon-editor',
   imports: [
@@ -126,7 +114,6 @@ export class PolygonEditor {
     computation: () => false,
   });
   protected readonly imageFailed = signal(false);
-  /** Seeded from the API's rendition size, then corrected by the loaded image. */
   protected readonly imageAspectRatio = linkedSignal(() => {
     const width = this.imageWidth();
     const height = this.imageHeight();
@@ -134,10 +121,6 @@ export class PolygonEditor {
   });
 
   private readonly freeSpaceForImage = signal<Size>({ width: 0, height: 0 });
-  /**
-   * The stage (image box) is the largest box with the image's aspect ratio that fits the free
-   * space, so the canvas maps 1:1 onto the image and no letterbox math is needed.
-   */
   protected readonly stageSize = computed<Size>(() => {
     const { width, height } = this.freeSpaceForImage();
     const aspectRatio = this.imageAspectRatio();
@@ -149,7 +132,6 @@ export class PolygonEditor {
     () => this.polygons().find((polygon) => polygon.id === this.selectedId()) ?? null,
   );
 
-  // Transient interaction state: read only by the canvas, so plain fields rather than signals.
   private canvasSize: Size = { width: 0, height: 0 };
   private draftVertices: Point[] = [];
   private cursorPx: Point | null = null;
@@ -161,10 +143,7 @@ export class PolygonEditor {
   private messageTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    const destroyRef = inject(DestroyRef);
-
     effect(() => {
-      // Repaint whenever the store-backed polygons, the mode or the selection change.
       this.polygons();
       this.mode();
       this.selectedId();
@@ -190,8 +169,8 @@ export class PolygonEditor {
       resizeObserver.observe(stageWrap);
       resizeObserver.observe(stage);
 
-      // A devicePixelRatio change (other monitor, zoom) does not always resize the stage, so watch
-      // it directly to keep the backing store crisp. The query is re-armed for the new ratio.
+      // a devicePixelRatio change (other monitor, zoom) does not always resize the stage, so watch
+      // it directly to keep the backing store crisp. the query is re-armed for the new ratio.
       let resolutionQuery: MediaQueryList | null = null;
       const onResolutionChange = () => {
         watchResolution();
@@ -218,7 +197,7 @@ export class PolygonEditor {
       }
       this.updateCursorStyle(null);
 
-      destroyRef.onDestroy(() => {
+      inject(DestroyRef).onDestroy(() => {
         resizeObserver.disconnect();
         resolutionQuery?.removeEventListener('change', onResolutionChange);
         for (const [type, listener] of listeners) {
@@ -236,7 +215,7 @@ export class PolygonEditor {
 
   // ---- public API used by the dialog ----
 
-  /** Handles Esc: cancels a draft, a drag or the selection. Returns false if there was nothing to cancel. */
+  // handles Esc: cancels a draft, a drag or the selection. returns false if there was nothing to cancel.
   handleEscape(): boolean {
     if (this.activeDrag) {
       this.cancelDrag();
@@ -429,8 +408,7 @@ export class PolygonEditor {
     const point = this.toNormalizedPoint(event);
     const pointerPx = this.toPixel(point);
 
-    // Second click of a double-click: the first click already placed the final vertex.
-    if (event.detail >= DOUBLE_CLICK_COUNT) {
+    if (event.detail >= 2) {
       this.tryFinish();
       return;
     }
@@ -481,7 +459,7 @@ export class PolygonEditor {
   // ---- drawing ----
 
   private tryFinish(): void {
-    // E.g. the second click of a double-click on the first vertex, after the first click finished.
+    // e.g. the second click of a double-click on the first vertex, after the first click finished.
     if (this.draftVertices.length === 0) {
       return;
     }
@@ -497,7 +475,6 @@ export class PolygonEditor {
       this.announce('The shape is too small.');
       return;
     }
-    // Only canonical (counter-clockwise) rings reach the store.
     this.polygonCreated.emit({
       id: nextPolygonId(),
       points: normalizeWinding(this.draftVertices),
@@ -547,7 +524,6 @@ export class PolygonEditor {
       );
       drag.previewPoints = translate(drag.originalPoints, dx, dy);
     } else {
-      // Angles are measured in pixel space, which is aspect-correct.
       const center = centroid(toPixels(drag.originalPoints, this.canvasSize));
       const startPointerPx = this.toPixel(drag.startNormalized);
       const angle =
@@ -555,7 +531,7 @@ export class PolygonEditor {
         Math.atan2(startPointerPx.y - center.y, startPointerPx.x - center.x);
       const canvasAspectRatio = this.canvasSize.width / this.canvasSize.height;
       const rotated = rotateNormalized(drag.originalPoints, angle, canvasAspectRatio);
-      // Only accept angles at which the shape still fits the image; otherwise keep the last one
+      // only accept angles at which the shape still fits the image; otherwise keep the last one
       // that did, so stored points always stay within 0..1.
       const box = boundingBox(rotated);
       if (box.maxX - box.minX <= 1 && box.maxY - box.minY <= 1) {
@@ -601,7 +577,7 @@ export class PolygonEditor {
     );
   }
 
-  /** Topmost polygon under the pointer (reverse z-order), using the shapes as currently drawn. */
+  /** topmost polygon under the pointer (reverse z-order), using the shapes as currently drawn. */
   private hitTest(pointerPx: Point): PixelPolygon | null {
     const shapes = this.pixelPolygons();
     for (let i = shapes.length - 1; i >= 0; i--) {
@@ -613,7 +589,7 @@ export class PolygonEditor {
   }
 
   /**
-   * Rotate handle, always inside the canvas so it stays visible and clickable: above the
+   * rotate handle, always inside the canvas so it stays visible and clickable: above the
    * top-centre of the bounding box, else below it, else inside the box near its top edge
    * (for shapes that span almost the full height).
    */
@@ -680,7 +656,7 @@ export class PolygonEditor {
     if (!width || !height) {
       return;
     }
-    // Device-pixel-ratio aware backing store: crisp lines on HiDPI screens and when zoomed.
+    // device-pixel-ratio aware backing store: crisp lines on HiDPI screens and when zoomed.
     const pixelRatio = window.devicePixelRatio || 1;
     const backingWidth = Math.round(width * pixelRatio);
     const backingHeight = Math.round(height * pixelRatio);

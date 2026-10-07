@@ -3,7 +3,6 @@ import { createFeature, createReducer, createSelector, on } from '@ngrx/store';
 import { Polygon, PolygonsState } from '../models/polygon';
 import { PolygonsActions } from './polygons.actions';
 
-/** Keyed by polygon id; insertion order is the z-order (later polygons are drawn on top). */
 const polygonsAdapter = createEntityAdapter<Polygon>();
 
 const initialState: PolygonsState = polygonsAdapter.getInitialState();
@@ -41,7 +40,6 @@ export const polygonsFeature = createFeature({
   },
 });
 
-/** Selector factory; call it once per dialog, since the image id is fixed for its lifetime. */
 export const selectPolygonsForImage = (imageId: string) =>
   createSelector(
     polygonsFeature.selectPolygonsByImage,

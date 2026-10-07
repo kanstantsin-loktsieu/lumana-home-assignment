@@ -62,8 +62,6 @@ $message-icon-size: 48px;
   }
 }
 
-// Shared by result rows (in .viewport) and skeleton rows (in .state), so it is not nested under either.
-// Fixed height: the component passes ROW_HEIGHT_PX in as the --row-height custom property.
 .row {
   display: flex;
   align-items: center;

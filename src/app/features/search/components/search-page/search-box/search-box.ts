@@ -19,10 +19,6 @@ import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { Suggestion } from '../../../models/suggestion';
 
-/**
- * Presentational typeahead input, usable as a signal-forms control (`[formField]`). It only shows
- * its value, validation errors and the suggestions it is given; the parent owns the store logic.
- */
 @Component({
   selector: 'app-search-box',
   imports: [
@@ -55,7 +51,6 @@ export class SearchBox implements FormValueControl<string> {
   protected readonly isEmpty = computed(() => this.value().trim() === '');
   protected readonly firstErrorMessage = computed(() => this.errors()[0]?.message ?? null);
 
-  /** Re-anchors an open suggestions panel after the search box has moved. */
   repositionPanel(): void {
     const trigger = this.autocompleteTrigger();
     if (trigger.panelOpen) {
@@ -73,7 +68,6 @@ export class SearchBox implements FormValueControl<string> {
     this.suggestionPicked.emit(query);
   }
 
-  /** The clear button disappears once the field is empty, so focus goes back to the input. */
   protected clear(): void {
     this.value.set('');
     this.matInput().focus();

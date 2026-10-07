@@ -2,8 +2,8 @@ import {
   ROTATE_HANDLE_RADIUS_PX,
   SELECTION_BOX_PADDING_PX,
 } from '../constants/annotation.constants';
-import { Point } from '../models/geometry';
 import { PixelPolygon, Scene } from '../models/editor';
+import { Point } from '../models/geometry';
 import { boundingBox } from './polygon-geometry';
 
 const COLORS = {
@@ -20,15 +20,12 @@ const COLORS = {
 } as const;
 
 const VERTEX_RADIUS = 4;
-/** How much larger than a vertex dot the ring around the first vertex is, once the outline can close. */
+// how much larger than a vertex dot the ring around the first vertex is, once the outline can close.
 const CLOSE_RING_EXTRA_RADIUS = 4;
-/** Inset of the rotate glyph's arc from the edge of the handle knob. */
 const HANDLE_GLYPH_INSET = 4;
 
-/** Stroke widths, in CSS pixels. */
 const LINE_WIDTHS = {
   outline: 2,
-  /** Added to an outline's width for the dark halo drawn underneath it. */
   haloExtra: 2,
   vertex: 1.5,
   selectionBox: 1,
@@ -39,13 +36,11 @@ const LINE_WIDTHS = {
   closeRing: 2,
 } as const;
 
-/** Dash and gap lengths, in CSS pixels. */
 const DASH_PATTERNS = {
   selectionBox: [4, 4],
   closingEdge: [5, 5],
 } as const;
 
-/** Triangle at the end of the rotate glyph's arc: its extent along and across the arc, in CSS pixels. */
 const ARROW_HEAD = {
   forward: 2.5,
   back: 1.5,
@@ -62,7 +57,6 @@ const tracePath = (ctx: CanvasRenderingContext2D, points: readonly Point[], clos
   }
 };
 
-/** Stroke with a dark halo underneath so outlines stay visible on bright and dark photos. */
 const strokeWithHalo = (
   ctx: CanvasRenderingContext2D,
   color: string,
@@ -136,9 +130,6 @@ const drawSelection = (ctx: CanvasRenderingContext2D, scene: Scene, polygon: Pix
   ctx.strokeStyle = COLORS.selected;
   ctx.stroke();
 
-  // Rotate glyph (like "rotate right"): a clockwise arc with a gap at the top and an arrow head at
-  // its end. Canvas angles grow clockwise on screen, so the direction of travel at angle t is the
-  // tangent (-sin t, cos t).
   const glyphRadius = ROTATE_HANDLE_RADIUS_PX - HANDLE_GLYPH_INSET;
   const gapAngle = Math.PI / 2;
   const arcStart = -Math.PI / 2 + gapAngle / 2;
@@ -183,14 +174,12 @@ const drawDraft = (ctx: CanvasRenderingContext2D, scene: Scene) => {
   }
 
   if (cursorPx) {
-    // Pending segment: to the first vertex when closing, otherwise to the cursor.
     const target = cursorOnFirstVertex ? first : cursorPx;
     ctx.beginPath();
     ctx.moveTo(last.x, last.y);
     ctx.lineTo(target.x, target.y);
     strokeWithHalo(ctx, pendingSegmentCrossesOutline ? COLORS.danger : COLORS.stroke);
 
-    // Dashed hint of the closing edge.
     if (!cursorOnFirstVertex && draftVertices.length >= 2) {
       ctx.save();
       ctx.setLineDash(DASH_PATTERNS.closingEdge);
@@ -214,7 +203,6 @@ const drawDraft = (ctx: CanvasRenderingContext2D, scene: Scene) => {
   }
 };
 
-/** Paints a full frame. Expects the context transform to already map CSS pixels to device pixels. */
 export const renderScene = (ctx: CanvasRenderingContext2D, scene: Scene): void => {
   ctx.clearRect(0, 0, scene.canvasSize.width, scene.canvasSize.height);
   ctx.lineJoin = 'round';

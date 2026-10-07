@@ -1,7 +1,6 @@
 @use 'breakpoints' as bp;
 @use 'icons';
 
-// The stage never gets less room than this, however short the dialog is.
 $stage-min-height: 160px;
 
 :host {
@@ -66,7 +65,6 @@ $stage-min-height: 160px;
 }
 
 .stage-wrap {
-  // Takes all remaining height; its measured content box is where the stage is fitted.
   flex: 1;
   min-height: $stage-min-height;
   display: flex;
@@ -80,7 +78,6 @@ $stage-min-height: 160px;
     padding: 4px;
   }
 
-  // Sized in code to the largest box with the image's aspect ratio that fits the wrap.
   .stage {
     position: relative;
     flex: none;
@@ -127,7 +124,6 @@ $stage-min-height: 160px;
       }
     }
 
-    // The editor sets .ready on the stage once the image has loaded.
     &.ready {
       .image {
         opacity: 1;

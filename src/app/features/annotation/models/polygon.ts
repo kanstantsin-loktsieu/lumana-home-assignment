@@ -3,10 +3,10 @@ import { Point } from './geometry';
 
 export interface Polygon {
   readonly id: string;
-  /** The `nasa_id` of the annotated image. */
+  // nasa_id of the image.
   readonly imageId: string;
   /**
-   * Vertices in normalized image coordinates (0..1 on both axes), so the shape keeps its position
+   * vertices in normalized image coordinates (0..1 on both axes), so the shape keeps its position
    * and proportions when the image is resized. The array defines exactly one polygon:
    *
    * - an **ordered vertex ring**: edges run `p[i] → p[i+1]` plus an implicit closing edge
@@ -17,8 +17,8 @@ export interface Polygon {
    *   so fill and hit-testing agree;
    * - **canonical winding**: counter-clockwise on screen (`signedArea < 0` with y pointing down).
    *
-   * The editor enforces this on creation. Move and rotate are rigid motions and preserve it.
-   * Rotation is applied to the points directly; no angle is stored.
+   * the editor enforces this on creation. move and rotate are rigid motions and preserve it.
+   * rotation is applied to the points directly; no angle is stored, rotation is not cancellable.
    */
   readonly points: readonly Point[];
   readonly createdAt: number;

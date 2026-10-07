@@ -23,18 +23,16 @@ export interface DragState {
   lastPointerPx: Point;
 }
 
-/** A polygon already converted to CSS-pixel coordinates of the canvas. */
 export interface PixelPolygon {
   readonly id: string;
   readonly points: readonly Point[];
 }
 
-/** Everything needed to paint one frame. All coordinates are CSS pixels. */
+// all coordinates are CSS pixels
 export interface Scene {
   readonly canvasSize: Size;
   readonly polygons: readonly PixelPolygon[];
   readonly selectedId: string | null;
-  /** Painted red as a preview of the delete. */
   readonly deleteHoverId: string | null;
   readonly draftVertices: readonly Point[];
   readonly cursorPx: Point | null;

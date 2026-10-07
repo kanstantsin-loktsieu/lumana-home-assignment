@@ -1,6 +1,5 @@
 @use 'breakpoints' as bp;
 
-// The hero's padding and the intro's collapse run together, so the search box glides into place.
 $hero-transition-duration: 200ms;
 
 :host {
@@ -43,8 +42,6 @@ $hero-transition-duration: 200ms;
     }
   }
 
-  // A one-row grid animates between its content height (1fr) and nothing (0fr), which a plain
-  // `height: auto` cannot do.
   .intro {
     display: grid;
     grid-template-rows: 1fr;
@@ -66,7 +63,6 @@ $hero-transition-duration: 200ms;
     }
 
     .intro-content {
-      // Hidden overflow also contains the children's margins, so they collapse with the row.
       min-height: 0;
       overflow: hidden;
     }

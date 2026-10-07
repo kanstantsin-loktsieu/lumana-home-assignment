@@ -6,7 +6,6 @@ import { SearchState } from '../models/search-state';
 import { hasMorePages } from '../utils/pagination';
 import { SearchApiActions } from './search.actions';
 
-/** No sortComparer: API relevance order is kept. `addMany` skips ids already present (de-dupe across pages). */
 const resultsAdapter = createEntityAdapter<SearchResultItem>({
   selectId: (item) => item.nasaId,
 });
@@ -42,7 +41,7 @@ export const searchFeature = createFeature({
     on(
       SearchApiActions.pageLoaded,
       (state, { query, page, items, totalHits, fetchedCount }): SearchState => {
-        // Race guard: drop responses for an older query or an unexpected page.
+        // race guard: drop responses for an older query or an unexpected page.
         if (query !== state.query || page !== state.lastLoadedPage + 1) {
           return state;
         }
@@ -63,7 +62,6 @@ export const searchFeature = createFeature({
       if (query !== state.query) {
         return state;
       }
-      // Past the API's 10 000-result cap: the list simply ends.
       if (error.kind === 'result-cap') {
         return { ...state, status: 'loaded', hasMore: false, error: null };
       }
@@ -80,13 +78,11 @@ export const searchFeature = createFeature({
     const { selectAll } = resultsAdapter.getSelectors();
     return {
       selectResults: createSelector(selectSearchState, selectAll),
-      /** Scroll-driven paging: only when idle, so a failed page is never retried automatically. */
       selectCanLoadMore: createSelector(
         selectHasMore,
         selectStatus,
         (hasMore, status) => hasMore && status === 'loaded',
       ),
-      /** A later page failed and the user may retry it explicitly. */
       selectCanRetryNextPage: createSelector(
         selectHasMore,
         selectStatus,

@@ -12,7 +12,6 @@ export const queriesFeature = createFeature({
   name: 'queries',
   reducer: createReducer(
     initialState,
-    // Meaningful = the first page of a search completed with at least one hit.
     on(SearchApiActions.pageLoaded, (state, { query, page, totalHits, loadedAt }) =>
       page === FIRST_PAGE && totalHits > 0 ? rememberQuery(state, query, loadedAt) : state,
     ),
@@ -24,7 +23,6 @@ export const queriesFeature = createFeature({
     );
     return {
       selectSavedQueries,
-      /** Tokenized once per history change, not per keystroke. */
       selectQueryIndex: createSelector(selectSavedQueries, (queries): IndexedQuery[] =>
         queries.map((query) => ({ query, tokens: tokenize(query.id) })),
       ),

@@ -14,8 +14,6 @@ $option-icon-size: 20px;
     color: var(--mat-sys-on-surface-variant);
   }
 
-  // Keeps the clear icon off the pill's rounded end: its centre sits as far from the right edge
-  // (36px) as the search icon's centre sits from the left.
   .clear-button {
     margin-right: 16px;
   }

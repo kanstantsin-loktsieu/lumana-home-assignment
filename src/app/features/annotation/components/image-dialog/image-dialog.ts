@@ -12,11 +12,10 @@ import { MatIcon } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import { NewPolygon, PolygonChange } from '../../models/editor';
 import { ImageDialogData } from '../../models/image-dialog-data';
-import { PolygonEditor } from './polygon-editor/polygon-editor';
 import { PolygonsActions } from '../../state/polygons.actions';
 import { selectPolygonsForImage } from '../../state/polygons.reducer';
+import { PolygonEditor } from './polygon-editor/polygon-editor';
 
-/** Container: wires the presentational polygon editor to the store for one image. */
 @Component({
   selector: 'app-image-dialog',
   imports: [
@@ -37,16 +36,11 @@ export class ImageDialog {
   private readonly dialogRef = inject<MatDialogRef<ImageDialog>>(MatDialogRef);
   protected readonly image = inject<ImageDialogData>(MAT_DIALOG_DATA).image;
 
-  /** The image id is fixed for the dialog's lifetime, so the selector factory runs once. */
   protected readonly polygons = this.store.selectSignal(selectPolygonsForImage(this.image.nasaId));
 
   private readonly editor = viewChild.required(PolygonEditor);
 
   constructor() {
-    // Material closes the dialog on Esc and on a backdrop click by itself. Esc is caught in the
-    // capture phase first, so the editor can cancel a drag, a draft or the selection; only an Esc
-    // with nothing left to cancel reaches Material and closes the dialog. (A listener on this
-    // component's host would miss Esc while the dialog container itself has focus.)
     const document = inject(DOCUMENT);
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && this.editor().handleEscape()) {

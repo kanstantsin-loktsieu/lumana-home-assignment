@@ -1,7 +1,3 @@
-/**
- * Raw response types of `GET https://images-api.nasa.gov/search`, as observed on the live API.
- * Everything that is not guaranteed on every item is optional.
- */
 export interface NasaSearchResponseDto {
   readonly collection: {
     readonly href: string;
@@ -19,7 +15,6 @@ export interface NasaCollectionLinkDto {
 }
 
 export interface NasaItemDto {
-  /** URL of the item's asset manifest (`collection.json`). */
   readonly href: string;
   readonly data: readonly NasaItemDataDto[];
   readonly links?: readonly NasaLinkDto[];
@@ -39,7 +34,6 @@ export interface NasaItemDataDto {
 
 export interface NasaLinkDto {
   readonly href: string;
-  /** `preview` is the `~thumb`, `alternate` a `~small|~medium|~large`, `canonical` the `~orig`. */
   readonly rel: 'preview' | 'alternate' | 'canonical' | string;
   readonly render?: string;
   readonly width?: number;
@@ -47,7 +41,6 @@ export interface NasaLinkDto {
   readonly size?: number;
 }
 
-/** Error body returned by the API on 4xx, e.g. past the 10 000-result cap. */
 export interface NasaErrorBodyDto {
   readonly reason: string;
 }
