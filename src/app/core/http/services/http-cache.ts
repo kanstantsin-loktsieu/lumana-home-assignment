@@ -1,21 +1,15 @@
 import { HttpEvent, HttpResponse } from '@angular/common/http';
 import { Service } from '@angular/core';
 import { Observable } from 'rxjs';
-import { LruCache } from '../../shared/utils/lru-cache';
-import { CachedResponse } from './models/cached-response';
+import { CachedResponse } from '../models/cached-response';
+import { LruCache } from '../utils/lru-cache';
 
-const HTTP_CACHE_MAX_ENTRIES = 100;
-
-/**
- * Response cache and registry of shared in-flight requests used by `httpCacheInterceptor`.
- * Both stores are private; callers go through the methods, so expiry is handled in one place.
- */
 @Service()
 export class HttpCache {
-  private readonly responses = new LruCache<string, CachedResponse>(HTTP_CACHE_MAX_ENTRIES);
+  private readonly maxEntries = 100;
+  private readonly responses = new LruCache<string, CachedResponse>(this.maxEntries);
   private readonly pendingRequests = new Map<string, Observable<HttpEvent<unknown>>>();
 
-  /** A clone of the cached response for `key`, or `null` if there is none or it has expired. */
   getResponse(key: string): HttpResponse<unknown> | null {
     const cached = this.responses.get(key);
     if (!cached) {

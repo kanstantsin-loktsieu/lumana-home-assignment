@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpStatusCode } from '@angular/common/http';
 import { retry, throwError, timer } from 'rxjs';
-import { NETWORK_ERROR_STATUS } from '../../shared/constants/error-status';
+import { NETWORK_ERROR_STATUS } from '../../../shared/constants/error-status';
 
 const MAX_RETRIES = 2;
 const BASE_DELAY_MS = 400;
@@ -15,12 +15,9 @@ const TRANSIENT_STATUSES = new Set<number>([
 const isTransient = (error: unknown): boolean =>
   error instanceof HttpErrorResponse && TRANSIENT_STATUSES.has(error.status);
 
-/**
- * Retries idempotent GETs on transient failures with exponential backoff (400 ms, 800 ms).
- * The delay is a `timer`, so an unsubscribing caller (e.g. `switchMap`) cancels pending retries.
- */
 export const retryInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.method !== 'GET') {
+    // only care about idempotent GETs
     return next(req);
   }
   return next(req).pipe(
