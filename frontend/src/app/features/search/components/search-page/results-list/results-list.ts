@@ -85,22 +85,23 @@ export class ResultsList {
   >({
     source: () => ({ status: this.status(), query: this.query(), totalHits: this.totalHits() }),
     computation: ({ status, query, totalHits }, previous) => {
-      if (status === 'idle') {
-        return '';
-      }
       const sameQuery = previous?.source.query === query;
-      if (status === 'loading' || status === 'loadingMore') {
-        return sameQuery ? previous.value : '';
+      switch (status) {
+        case 'idle':
+          return '';
+        case 'loading':
+        case 'loadingMore':
+          return sameQuery ? previous.value : '';
+        case 'error':
+          // a failed later page is announced by the footer's alert; a failed first page here.
+          return sameQuery ? previous.value : `Search for ${query} failed`;
+        default:
+          if (totalHits === 0) {
+            return `No images match ${query}`;
+          }
+          const count = formatNumber(totalHits, this.locale);
+          return `${count} ${totalHits === 1 ? 'result' : 'results'} for ${query}`;
       }
-      if (status === 'error') {
-        // A failed later page is announced by the footer's alert; a failed first page here.
-        return sameQuery ? previous.value : `Search for ${query} failed`;
-      }
-      if (totalHits === 0) {
-        return `No images match ${query}`;
-      }
-      const count = formatNumber(totalHits, this.locale);
-      return `${count} ${totalHits === 1 ? 'result' : 'results'} for ${query}`;
     },
   });
 
