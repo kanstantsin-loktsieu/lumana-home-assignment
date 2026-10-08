@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package report.v1;
+
+option go_package = "lumana/report/gen/reportv1;reportv1";
+
+// the caller sends the time series; the service decides chart types, titles, axis labels and layout
+service ActivityReportService {
+  rpc RenderActivityReport(RenderActivityReportRequest) returns (RenderActivityReportResponse);
+}
+
+message Point {
+  int64 timestamp_ms = 1;
+  double value = 2;
+}
+
+message Series {
+  // route ("GET /images"), outcome ("success") or domain event name
+  string label = 1;
+  repeated Point points = 2;
+}
+
+message RenderActivityReportRequest {
+  int64 from_ms = 1;
+  int64 to_ms = 2;
+  // width of one aggregation bucket; points are aligned to from_ms
+  int64 bucket_ms = 3;
+  repeated Series requests_by_route = 4;
+  repeated Series requests_by_outcome = 5;
+  repeated Series avg_latency_by_route = 6;
+  repeated Series max_latency_by_route = 7;
+  repeated Series domain_events_by_name = 8;
+}
+
+message RenderActivityReportResponse {
+  bytes pdf = 1;
+}
