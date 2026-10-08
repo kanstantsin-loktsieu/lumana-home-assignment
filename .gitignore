@@ -46,3 +46,11 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Environment
+.env
+
+# Backend generated files
+/backend/data/
+/backend/report/gen/
+/backend/report/bin/

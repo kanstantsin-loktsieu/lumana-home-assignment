@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolvePackageJsonExports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2023",
+    "types": ["node"],
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@app/common/*": ["./libs/common/src/*"],
+      "@app/config/*": ["./libs/config/src/*"],
+      "@app/mongo/*": ["./libs/mongo/src/*"],
+      "@app/redis/*": ["./libs/redis/src/*"],
+      "@app/activity/*": ["./libs/activity/src/*"],
+      "@app/http/*": ["./libs/http/src/*"]
+    }
+  },
+  "include": ["apps/**/*.ts", "libs/**/*.ts"]
+}

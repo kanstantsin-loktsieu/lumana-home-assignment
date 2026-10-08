@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "monorepo": true,
+  "root": "apps/images",
+  "sourceRoot": "apps/images/src",
+  "compilerOptions": {
+    "builder": "rspack",
+    "deleteOutDir": true,
+    "tsConfigPath": "apps/images/tsconfig.app.json"
+  },
+  "projects": {
+    "images": {
+      "type": "application",
+      "root": "apps/images",
+      "entryFile": "main",
+      "sourceRoot": "apps/images/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/images/tsconfig.app.json"
+      }
+    },
+    "logs": {
+      "type": "application",
+      "root": "apps/logs",
+      "entryFile": "main",
+      "sourceRoot": "apps/logs/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/logs/tsconfig.app.json"
+      }
+    }
+  }
+}
