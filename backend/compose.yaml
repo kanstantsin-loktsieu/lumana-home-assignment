@@ -1,0 +1,96 @@
+name: lumana-backend
+
+# an optional .env supplies the tunables; `environment` below overrides everything host-specific
+x-env-file: &env-file
+  env_file:
+    - path: .env
+      required: false
+
+services:
+  mongo:
+    image: mongo:8.0
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - 127.0.0.1:27017:27017
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    # the redis:8 image bundles the TimeSeries module; the default command keeps it loaded
+    image: redis:8.10
+    volumes:
+      - redis-data:/data
+    ports:
+      - 127.0.0.1:6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  images:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP: images
+    <<: *env-file
+    environment:
+      IMAGES_PORT: 3000
+      MONGO_URL: mongodb://mongo:27017
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DATA_DIR: /data
+    volumes:
+      - images-data:/data
+    ports:
+      - 127.0.0.1:3000:3000
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  logs:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP: logs
+    <<: *env-file
+    environment:
+      LOGS_PORT: 3001
+      MONGO_URL: mongodb://mongo:27017
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REPORT_GRPC_URL: report:50051
+    ports:
+      - 127.0.0.1:3001:3001
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      report:
+        condition: service_started
+
+  report:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: report/Dockerfile
+    environment:
+      GRPC_PORT: 50051
+    ports:
+      - 127.0.0.1:50051:50051
+
+volumes:
+  mongo-data:
+  redis-data:
+  images-data:
