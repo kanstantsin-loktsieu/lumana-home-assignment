@@ -11,7 +11,6 @@ const CENTROID_AREA_DIVISOR = 6;
 export const toPixels = (points: readonly Point[], canvasSize: Size): Point[] =>
   points.map((point) => ({ x: point.x * canvasSize.width, y: point.y * canvasSize.height }));
 
-// shoelace formula
 const signedArea = (points: readonly Point[]): number => {
   let sum = 0;
   for (let i = 0; i < points.length; i++) {
@@ -121,7 +120,6 @@ export const pointInPolygon = (point: Point, points: readonly Point[]): boolean 
 
 export const distance = (a: Point, b: Point): number => Math.hypot(a.x - b.x, a.y - b.y);
 
-// cross product (b - a) × (c - a): > 0, < 0 or ~0 (collinear).
 const orientation = (a: Point, b: Point, c: Point): number => {
   const value = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
   return Math.abs(value) < COLLINEAR_EPSILON ? 0 : value;

@@ -45,7 +45,7 @@ $title-max-lines: 2;
     }
   }
 
-  // Fixed-height lightbox: the content takes the remaining height and the editor fits the
+  // fixed-height lightbox: the content takes the remaining height and the editor fits the
   // image into it, so nothing ever scrolls out of reach of the canvas.
   .content {
     flex: 1;

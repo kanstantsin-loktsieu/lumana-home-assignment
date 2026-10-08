@@ -11,13 +11,12 @@ import { queriesFeature } from './features/search/state/queries.reducer';
 import { loadNextPage, searchOnQueryChange } from './features/search/state/search.effects';
 import { searchFeature } from './features/search/state/search.reducer';
 
-/** How many actions the Redux DevTools keep in the history. */
 const DEVTOOLS_MAX_ACTIONS = 50;
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    // Fetch is the default backend in Angular 22, so a cancelled request aborts the fetch.
+    // fetch is the default backend in Angular 22, so a cancelled request aborts the fetch.
     provideHttpClient(withInterceptors([httpCacheInterceptor, retryInterceptor])),
     provideStore(),
     provideState(searchFeature),

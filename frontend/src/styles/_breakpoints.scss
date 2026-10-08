@@ -1,5 +1,4 @@
-// Shared layout breakpoints (Material's handset width). A Sass partial (leading underscore): it is
-// only ever `@use`d by the global and component stylesheets and never compiled on its own.
+// matches Material's handset width.
 $phone-max: 599.98px;
 
 @mixin phone {

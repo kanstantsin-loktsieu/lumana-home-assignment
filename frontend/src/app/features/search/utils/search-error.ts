@@ -5,7 +5,7 @@ import { SearchError } from '../models/search-result';
 
 const RESULT_CAP_REASON = 'Maximum number of search results';
 
-/** `SearchError.status` for a failure that is not an HTTP response at all. */
+// `SearchError.status` for a failure that is not an HTTP response at all.
 const NON_HTTP_ERROR_STATUS = -1;
 
 const isErrorBody = (body: unknown): body is NasaErrorBodyDto =>
@@ -13,7 +13,6 @@ const isErrorBody = (body: unknown): body is NasaErrorBodyDto =>
   body !== null &&
   typeof (body as { reason?: unknown }).reason === 'string';
 
-/** Maps an HTTP failure of the NASA search to a `SearchError`; the 10 000-result cap gets its own kind. */
 export const toSearchError = (error: unknown): SearchError => {
   if (!(error instanceof HttpErrorResponse)) {
     return {

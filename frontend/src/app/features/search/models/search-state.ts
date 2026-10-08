@@ -4,7 +4,6 @@ import { SearchError, SearchResultItem } from './search-result';
 export type SearchStatus = 'idle' | 'loading' | 'loadingMore' | 'loaded' | 'error';
 
 export interface SearchState extends EntityState<SearchResultItem> {
-  // normalized.
   readonly query: string;
   // 1-based, 0 before the first page lands.
   readonly lastLoadedPage: number;

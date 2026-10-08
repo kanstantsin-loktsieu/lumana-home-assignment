@@ -19,8 +19,8 @@ $stage-min-height: 160px;
 
   .modes {
     --mat-button-toggle-height: 40px;
-    // The dialog is centred at a fractional y offset. Without its own layer, Chrome repaints only the
-    // clicked toggle there and its background covers the group's bottom border. Rastering the group
+    // the dialog is centred at a fractional y offset. without its own layer, Chrome repaints only the
+    // clicked toggle there and its background covers the group's bottom border. rastering the group
     // as one layer keeps the border intact.
     will-change: transform;
 

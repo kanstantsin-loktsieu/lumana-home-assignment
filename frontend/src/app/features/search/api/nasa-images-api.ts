@@ -13,7 +13,6 @@ const SEARCH_URL = 'https://images-api.nasa.gov/search';
 export class NasaImagesApi {
   private readonly http = inject(HttpClient);
 
-  // "page" is 1-based
   searchImages(query: string, page: number): Observable<SearchPage> {
     const params = new HttpParams()
       .set('q', query)

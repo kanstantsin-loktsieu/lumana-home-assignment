@@ -215,9 +215,7 @@ export class PolygonEditor {
     });
   }
 
-  // ---- public API used by the dialog ----
-
-  // handles Esc: cancels a draft, a drag or the selection. returns false if there was nothing to cancel.
+  // returns false when there was nothing to cancel, so Esc falls through and closes the dialog.
   handleEscape(): boolean {
     if (this.activeDrag) {
       this.cancelDrag();
@@ -237,8 +235,6 @@ export class PolygonEditor {
     }
     return false;
   }
-
-  // ---- template handlers ----
 
   protected setMode(mode: EditorMode): void {
     this.mode.set(mode);
@@ -275,8 +271,6 @@ export class PolygonEditor {
       this.imageFailed.set(true);
     }
   }
-
-  // ---- pointer & keyboard ----
 
   private onPointerDown(event: PointerEvent): void {
     if (event.button !== PRIMARY_MOUSE_BUTTON) {
@@ -377,7 +371,7 @@ export class PolygonEditor {
       (point, i) => point.x !== drag.originalPoints[i].x || point.y !== drag.originalPoints[i].y,
     );
     if (changed) {
-      // One store update per gesture.
+      // one store update per gesture.
       this.polygonChanged.emit({ id: drag.polygonId, points: drag.previewPoints });
       this.announce(drag.kind === 'rotate' ? 'Shape rotated' : 'Shape moved');
     }
@@ -458,8 +452,6 @@ export class PolygonEditor {
     }
   }
 
-  // ---- drawing ----
-
   private tryFinish(): void {
     // e.g. the second click of a double-click on the first vertex, after the first click finished.
     if (this.draftVertices.length === 0) {
@@ -488,8 +480,6 @@ export class PolygonEditor {
     this.announce('Shape added');
     this.requestDraw();
   }
-
-  // ---- move & rotate ----
 
   private startDrag(
     kind: DragState['kind'],
@@ -558,8 +548,6 @@ export class PolygonEditor {
     }
   }
 
-  // ---- geometry helpers bound to the current canvas size ----
-
   private toNormalizedPoint(event: MouseEvent): Point {
     const rect = this.canvasRef().nativeElement.getBoundingClientRect();
     return {
@@ -579,7 +567,7 @@ export class PolygonEditor {
     );
   }
 
-  /** topmost polygon under the pointer (reverse z-order), using the shapes as currently drawn. */
+  // reverse z-order, so the topmost polygon under the pointer wins.
   private hitTest(pointerPx: Point): PixelPolygon | null {
     const shapes = this.pixelPolygons();
     for (let i = shapes.length - 1; i >= 0; i--) {
@@ -590,11 +578,9 @@ export class PolygonEditor {
     return null;
   }
 
-  /**
-   * rotate handle, always inside the canvas so it stays visible and clickable: above the
-   * top-centre of the bounding box, else below it, else inside the box near its top edge
-   * (for shapes that span almost the full height).
-   */
+  // always inside the canvas so the handle stays visible and clickable: above the top-centre of
+  // the bounding box, else below it, else inside the box near its top edge (for shapes that span
+  // almost the full height).
   private rotateHandleFor(points: readonly Point[]): RotateHandle {
     const box = boundingBox(toPixels(points, this.canvasSize));
     const margin = ROTATE_HANDLE_RADIUS_PX + ROTATE_HANDLE_EDGE_GAP_PX;
@@ -639,8 +625,6 @@ export class PolygonEditor {
     }
     this.messageTimer = setTimeout(() => this.message.set(null), MESSAGE_TIMEOUT_MS);
   }
-
-  // ---- rendering ----
 
   private requestDraw(): void {
     if (this.animationFrameId !== null) {

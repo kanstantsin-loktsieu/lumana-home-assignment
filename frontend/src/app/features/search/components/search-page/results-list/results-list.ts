@@ -75,10 +75,8 @@ export class ResultsList {
     () => this.status() === 'loaded' && this.hasItems() && !this.canLoadMore() && !this.isCapped(),
   );
 
-  /**
-   * Screen-reader summary. While the same query loads more pages (loaded → loadingMore → loaded)
-   * it keeps its text, so the count is not announced again; a new query always starts fresh.
-   */
+  // keeps its text while the same query loads more pages (loaded → loadingMore → loaded), so
+  // screen readers do not announce the count again; a new query always starts fresh.
   protected readonly announcement = linkedSignal<
     { status: SearchStatus; query: string; totalHits: number },
     string

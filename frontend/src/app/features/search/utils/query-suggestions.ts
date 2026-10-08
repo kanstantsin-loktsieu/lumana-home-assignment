@@ -5,7 +5,6 @@ import { Suggestion, SuggestionSegment } from '../models/suggestion';
 const RECENT_SUGGESTIONS = 5;
 const MAX_SUGGESTIONS = 8;
 
-/** Splits `text` into highlighted / plain segments: each word gets its longest matching input-token prefix marked. */
 const highlightSegments = (text: string, inputTokens: readonly string[]): SuggestionSegment[] => {
   const segments: SuggestionSegment[] = [];
   let emittedUpTo = 0;
@@ -40,11 +39,8 @@ const unhighlighted = (text: string): Suggestion => ({
   highlightedSegments: [{ text, match: false }],
 });
 
-/**
- * Suggests past queries by word breakdown: an input token matches when it is a prefix of any word
- * of a saved query, in any order ("11 apo" → "apollo 11"). Ranked by matched-token count, then
- * usage, then recency. An empty input lists the most recent queries.
- */
+// word breakdown: an input token matches when it is a prefix of any word of a saved query, in any
+// order ("11 apo" → "apollo 11"). ranked by matched-token count, then usage, then recency.
 export const rankSuggestions = (
   queryIndex: readonly IndexedQuery[],
   rawInput: string,

@@ -1,6 +1,5 @@
 @use 'breakpoints' as bp;
 
-// Minimum height of the card's header and footer strips.
 $bar-min-height: 44px;
 $message-icon-size: 48px;
 
@@ -134,7 +133,6 @@ $message-icon-size: 48px;
       }
     }
 
-    // The NASA id and its separator, inside .meta; hidden on phones.
     .id-part {
       @include bp.phone {
         display: none;

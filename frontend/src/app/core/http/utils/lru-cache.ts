@@ -1,4 +1,4 @@
-/** Minimal Map-based LRU: Map iteration order is insertion order, so the first key is the oldest. */
+// relies on Map iteration being insertion order: the first key is the oldest.
 export class LruCache<K, V> {
   private readonly entries = new Map<K, V>();
 
@@ -7,7 +7,7 @@ export class LruCache<K, V> {
   get(key: K): V | undefined {
     const value = this.entries.get(key);
     if (value !== undefined) {
-      // Re-insert to mark as most recently used.
+      // re-insert to mark as most recently used.
       this.entries.delete(key);
       this.entries.set(key, value);
     }

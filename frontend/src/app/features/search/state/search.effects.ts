@@ -27,21 +27,17 @@ import { searchFeature } from './search.reducer';
 
 const TYPEAHEAD_DEBOUNCE_MS = 300;
 
-/** Fetches one page and maps the outcome to `pageLoaded` / `pageFailed`. */
 const fetchPage = (api: NasaImagesApi, query: string, page: number): Observable<Action> =>
   api.searchImages(query, page).pipe(
     map((result) => SearchApiActions.pageLoaded({ query, page, ...result, loadedAt: Date.now() })),
     catchError((error: SearchError) => of(SearchApiActions.pageFailed({ query, page, error }))),
   );
 
-/**
- * Typeahead: debounced typing and immediate suggestion picks are normalized and de-duplicated, then
- * `switchMap` cancels the previous request, which aborts the underlying fetch.
- * Retrying a failed first page re-runs the query and bypasses the distinct check on purpose.
- */
+// `switchMap` cancels the previous request, which aborts the underlying fetch. retrying a failed
+// first page re-runs the query and bypasses the distinct check on purpose.
 export const searchOnQueryChange = createEffect(
   (actions$ = inject(Actions), store = inject(Store), api = inject(NasaImagesApi)) => {
-    // Clearing the box is not typing: an empty query skips the debounce, so the list clears at once.
+    // clearing the box is not typing: an empty query skips the debounce, so the list clears at once.
     const typed$ = actions$.pipe(
       ofType(SearchPageActions.queryChanged),
       debounce(({ query }) => timer(normalizeQuery(query) ? TYPEAHEAD_DEBOUNCE_MS : 0)),
@@ -74,12 +70,9 @@ export const searchOnQueryChange = createEffect(
   { functional: true },
 );
 
-/**
- * Batch pagination. Scrolling near the end requests the next page only while the list is idle and
- * has more; a failed page is retried only by an explicit Retry, never automatically.
- * `exhaustMap` ignores duplicates while a page is in flight, and `takeUntil` aborts the request as
- * soon as a new query starts or the search is cleared.
- */
+// a failed page is retried only by an explicit retry, never automatically. `exhaustMap` ignores
+// duplicates while a page is in flight, and `takeUntil` aborts the request as soon as a new query
+// starts or the search is cleared.
 export const loadNextPage = createEffect(
   (actions$ = inject(Actions), store = inject(Store), api = inject(NasaImagesApi)) => {
     const scrolled$ = actions$.pipe(

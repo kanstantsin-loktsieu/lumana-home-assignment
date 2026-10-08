@@ -5,12 +5,10 @@ export const normalizeQuery = (raw: string): string =>
 
 const TOKEN = /[\p{L}\p{N}]+/gu;
 
-// word breakdown of an already normalized string: unique letter/number runs, in order.
 export const tokenize = (normalized: string): string[] => [
   ...new Set(normalized.match(TOKEN) ?? []),
 ];
 
-// tokens with their positions in `text`, used to highlight matches. case-insensitive.
 export const tokenizeWithOffsets = (text: string): TokenWithOffset[] =>
   [...text.matchAll(TOKEN)].map((match) => ({
     token: match[0].toLowerCase(),

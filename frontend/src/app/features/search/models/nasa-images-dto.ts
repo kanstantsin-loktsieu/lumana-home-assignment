@@ -3,7 +3,7 @@ export interface NasaSearchResponseDto {
     readonly href: string;
     readonly items: readonly NasaItemDto[];
     readonly metadata: { readonly total_hits: number };
-    /** `http://` links that are emitted even on the last reachable page; never used to paginate. */
+    // `http://` links that are emitted even on the last reachable page; never used to paginate.
     readonly links?: readonly NasaCollectionLinkDto[];
   };
 }

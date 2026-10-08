@@ -63,7 +63,6 @@ mark {
   padding: 0 1px;
 }
 
-// The image dialog takes the whole screen on phones.
 .image-dialog-panel {
   @include bp.phone {
     width: 100vw !important;
