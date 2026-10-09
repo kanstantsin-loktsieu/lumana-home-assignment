@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "generate:proto": "node -e \"require('fs').rmSync('apps/logs/src/reports/gen',{recursive:true,force:true})\" && proto-loader-gen-types --longs=Number --defaults -I proto -O apps/logs/src/reports/gen report/v1/activity_report.proto",
     "build": "nest build images && nest build logs",
     "start:images": "nest start images --watch",
+    "prestart:logs": "npm run generate:proto",
     "start:logs": "nest start logs --watch",
+    "pretypecheck": "npm run generate:proto",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "format:check": "prettier --check \"apps/**/*.ts\" \"libs/**/*.ts\""

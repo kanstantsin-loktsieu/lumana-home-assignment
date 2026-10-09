@@ -54,3 +54,4 @@ Thumbs.db
 /backend/data/
 /backend/report/gen/
 /backend/report/bin/
+/backend/apps/logs/src/reports/gen/

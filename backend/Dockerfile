@@ -10,7 +10,9 @@ ARG APP
 COPY nest-cli.json tsconfig.json ./
 COPY apps ./apps
 COPY libs ./libs
-RUN npx nest build ${APP}
+COPY proto ./proto
+# rspack strips types without checking them, so type-check here against the generated proto types
+RUN npm run generate:proto && npx tsc --noEmit -p apps/${APP}/tsconfig.app.json && npx nest build ${APP}
 
 FROM node:24-slim AS runtime
 ARG APP
