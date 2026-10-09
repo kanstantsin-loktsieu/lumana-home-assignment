@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"image/color"
+	"log"
 	"math"
 	"sort"
 	"strconv"
@@ -39,7 +40,7 @@ var outcomes = []outcomeStyle{
 	{"server-error", color.RGBA{R: 0xd6, G: 0x27, B: 0x28, A: 0xff}},
 }
 
-func (s *Server) RenderActivityReport(_ context.Context, req *reportv1.RenderActivityReportRequest) (*reportv1.RenderActivityReportResponse, error) {
+func (s *Server) RenderActivityReport(ctx context.Context, req *reportv1.RenderActivityReportRequest) (*reportv1.RenderActivityReportResponse, error) {
 	if err := validate(req); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
@@ -69,15 +70,21 @@ func (s *Server) RenderActivityReport(_ context.Context, req *reportv1.RenderAct
 	}
 	rendered := make([]pdf.Chart, 0, len(chartCaptions))
 	for _, item := range chartCaptions {
+		if err := ctx.Err(); err != nil {
+			return nil, status.FromContextError(err).Err()
+		}
 		item.chart.Times = g.times()
 		item.chart.Bucket = g.bucket
 		png, err := charts.Render(item.chart)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "render chart %q: %v", item.chart.Title, err)
+			return nil, internalError(fmt.Errorf("render chart %q: %w", item.chart.Title, err))
 		}
 		rendered = append(rendered, pdf.Chart{PNG: png, Caption: item.caption})
 	}
 
+	if err := ctx.Err(); err != nil {
+		return nil, status.FromContextError(err).Err()
+	}
 	from := time.UnixMilli(req.GetFromMs()).UTC()
 	to := time.UnixMilli(req.GetToMs()).UTC()
 	document, err := pdf.Render(pdf.Report{
@@ -90,9 +97,15 @@ func (s *Server) RenderActivityReport(_ context.Context, req *reportv1.RenderAct
 		Routes:    routeRows(sum.routes),
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "render pdf: %v", err)
+		return nil, internalError(fmt.Errorf("render pdf: %w", err))
 	}
 	return &reportv1.RenderActivityReportResponse{Pdf: document}, nil
+}
+
+// library errors stay in the log; the caller gets a fixed message
+func internalError(err error) error {
+	log.Printf("render failed: %v", err)
+	return status.Error(codes.Internal, "render failed")
 }
 
 // `empty` is 0 for counts and NaN where missing buckets should show as gaps
