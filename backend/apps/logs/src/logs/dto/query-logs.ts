@@ -5,12 +5,16 @@ import { CursorPageQueryDto } from '@app/http/cursor-page';
 import { LOG_LEVELS, type LogLevel } from '../models/log-document';
 
 export class QueryLogsDto extends CursorPageQueryDto {
-  @ApiPropertyOptional({ description: 'occurredAt from (inclusive), ISO 8601' })
+  @ApiPropertyOptional({
+    description: 'occurredAt from (inclusive); a date or a date-time with a zone',
+  })
   @IsOptional()
   @IsISO8601()
   readonly from?: string;
 
-  @ApiPropertyOptional({ description: 'occurredAt to (exclusive), ISO 8601' })
+  @ApiPropertyOptional({
+    description: 'occurredAt to (exclusive); a date or a date-time with a zone',
+  })
   @IsOptional()
   @IsISO8601()
   readonly to?: string;

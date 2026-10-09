@@ -18,7 +18,7 @@ export class ImportErrorDto {
   @ApiProperty({ type: String, nullable: true })
   readonly nasaId: string | null;
 
-  @ApiProperty({ example: 'dateCreated must be a valid date' })
+  @ApiProperty({ example: 'title must be a non-empty string' })
   readonly reason: string;
 }
 

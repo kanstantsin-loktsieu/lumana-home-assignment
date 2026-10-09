@@ -24,12 +24,16 @@ export class SearchImagesQueryDto extends CursorPageQueryDto {
   @MaxLength(100)
   readonly keyword?: string;
 
-  @ApiPropertyOptional({ description: 'dateCreated from (inclusive), ISO 8601' })
+  @ApiPropertyOptional({
+    description: 'dateCreated from (inclusive); a date or a date-time with a zone',
+  })
   @IsOptional()
   @IsISO8601()
   readonly from?: string;
 
-  @ApiPropertyOptional({ description: 'dateCreated to (exclusive), ISO 8601' })
+  @ApiPropertyOptional({
+    description: 'dateCreated to (exclusive); a date or a date-time with a zone',
+  })
   @IsOptional()
   @IsISO8601()
   readonly to?: string;

@@ -1,4 +1,5 @@
 import { isRecord } from '@app/common/type-guards';
+import { parseZonedDate, ZONED_DATE_HINT } from '@app/common/zoned-date';
 import { KEYWORD_SEPARATOR } from '../../shared/constants/image-record-columns';
 import type { ImageRecord } from '../../shared/models/image-record';
 
@@ -28,10 +29,13 @@ const optionalText = (value: unknown, field: string): string | null => {
   return value.trim() === '' ? null : value;
 };
 
+// a Date comes from an XLSX date cell and is used as is
 const isoDate = (value: unknown): string => {
   const date =
-    value instanceof Date ? value : typeof value === 'string' ? new Date(value) : new Date(NaN);
-  if (Number.isNaN(date.getTime())) throw new InvalidField('dateCreated must be a valid date');
+    value instanceof Date ? value : typeof value === 'string' ? parseZonedDate(value) : null;
+  if (date === null || Number.isNaN(date.getTime())) {
+    throw new InvalidField(`dateCreated must be ${ZONED_DATE_HINT}`);
+  }
   return date.toISOString();
 };
 

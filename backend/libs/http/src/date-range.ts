@@ -1,19 +1,16 @@
 import { BadRequestException } from '@nestjs/common';
+import { parseZonedDate, ZONED_DATE_HINT } from '@app/common/zoned-date';
 
 export interface DateRange {
   readonly from?: Date;
   readonly to?: Date;
 }
 
-// `@IsISO8601()` also accepts week, ordinal and basic forms (`2026-W41`) that `Date` cannot parse
+// `@IsISO8601()` also accepts week dates (`2026-W41`) and date-times without a zone
 const parseDate = (text: string | undefined, name: string): Date | undefined => {
   if (text === undefined) return undefined;
-  const date = new Date(text);
-  if (Number.isNaN(date.getTime())) {
-    throw new BadRequestException(
-      `\`${name}\` must be an ISO 8601 date-time such as 2026-10-08T10:00:00Z`,
-    );
-  }
+  const date = parseZonedDate(text);
+  if (date === null) throw new BadRequestException(`\`${name}\` must be ${ZONED_DATE_HINT}`);
   return date;
 };
 
