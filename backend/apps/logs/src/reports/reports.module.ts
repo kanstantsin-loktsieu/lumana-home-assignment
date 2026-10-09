@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import type { Environment } from '../config/environment';
 import { ActivityReportClient, REPORT_CLIENT } from './activity-report-client';
+import { ActivityReports } from './activity-reports';
 import { ActivitySeriesReader } from './activity-series-reader';
 import { ReportsController } from './reports.controller';
 
@@ -31,6 +32,6 @@ const MAX_MESSAGE_BYTES = 16 * 2 ** 20;
     ]),
   ],
   controllers: [ReportsController],
-  providers: [ActivitySeriesReader, ActivityReportClient],
+  providers: [ActivitySeriesReader, ActivityReportClient, ActivityReports],
 })
 export class ReportsModule {}
